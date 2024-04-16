@@ -9,6 +9,7 @@ app = FastAPI(
   version = "0.0.1",
 )
 
+
 @app.get("/", tags = ["Home"])
 def message():
   return HTMLResponse('''
@@ -22,9 +23,11 @@ def message():
     </html>
   ''')
 
+
 @app.get("/movies", tags = ['Movies'])
 def get_movies():
   return movies
+
 
 @app.get("/movies/{movie_id}", tags = ['Movies'])
 def get_movie(movie_id: int):
@@ -32,3 +35,10 @@ def get_movie(movie_id: int):
     if movie["id"] == movie_id:
       return movie
   return {"error": "Movie not found"}
+
+
+@app.get('/movies/', tags = ['Movies'])
+def get_movies_by_category(category: str, year: int):
+  for movie in movies:
+    if movie["category"] == category or movie["year"] == year:
+      return movie
