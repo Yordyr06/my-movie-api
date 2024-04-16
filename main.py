@@ -1,22 +1,13 @@
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 
+from data import movies
+
 
 app = FastAPI(
   title = "My First FastAPI",
   version = "0.0.1",
 )
-
-movies = [
-  {
-		"id": 1,
-		"title": "Avatar",
-		"overview": "En un exuberante planeta llamado Pandora viven los Na'vi, seres que ...",
-		"year": "2009",
-		"rating": 7.8,
-		"category": "Acción"
-	}
-]
 
 @app.get("/", tags = ["Home"])
 def message():
@@ -34,3 +25,10 @@ def message():
 @app.get("/movies", tags = ['Movies'])
 def get_movies():
   return movies
+
+@app.get("/movies/{movie_id}", tags = ['Movies'])
+def get_movie(movie_id: int):
+  for movie in movies:
+    if movie["id"] == movie_id:
+      return movie
+  return {"error": "Movie not found"}
