@@ -63,3 +63,34 @@ def add_movie(
   )
   movies.append(new_movie)
   return {"message": "Movie added successfully"}
+
+
+@app.put('/movies/{movie_id}', tags=['Movies'])
+def update_movie(
+      movie_id: int,
+      id: int = Body(...),
+      title: str = Body(...),
+      overview: str = Body(...),
+      year: int = Body(...),
+      rating: float = Body(...),
+      category: str = Body(...)
+    ):
+  for movie in movies:
+    if movie["id"] == movie_id:
+      movie["id"] = id
+      movie["title"] = title
+      movie["overview"] = overview
+      movie["year"] = year
+      movie["rating"] = rating
+      movie["category"] = category
+      return {"message": "Movie updated successfully"}
+  return {"error": "Movie not found"}
+
+
+@app.delete('/movies/{movie_id}', tags=['Movies'])
+def delete_movie(movie_id: int):
+  for movie in movies:
+    if movie["id"] == movie_id:
+      movies.remove(movie)
+      return {"message": "Movie deleted successfully"}
+  return {"error": "Movie not found"}
