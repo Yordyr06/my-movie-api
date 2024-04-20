@@ -1,19 +1,13 @@
-class Movie:
-  def __init__(
-				self, 
-				id: int,
-        title: str,
-        overview: str,
-        year: int,
-        rating: float,
-        category: str
-      ):
-			self.id = id
-			self.title = title
-			self.overview = overview
-			self.year = year
-			self.rating = rating
-			self.category = category
+from pydantic import BaseModel
+from typing import Optional
+
+class Movie(BaseModel): 
+	id: int
+	title: str
+	overview: Optional[str] = None
+	year: int
+	rating: Optional[float] = None
+	category: str
 
 movies = [
   {
