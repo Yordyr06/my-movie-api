@@ -1,13 +1,25 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 
 class Movie(BaseModel): 
 	id: int
-	title: str
+	title: str = Field(min_length = 5, max_length = 15)
 	overview: Optional[str] = None
-	year: int
+	year: int 
 	rating: Optional[float] = None
 	category: str
+
+	class Config: 
+		schema_extra = {
+			"example": {
+				"id": 1,
+				"title": "My Movie",
+				"overview": "A nice and exciting movie",
+				"year": 2000,
+				"rating": 1.0,
+				"category": "Drama"
+			}
+		}
 
 movies = [
   {
