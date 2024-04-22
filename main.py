@@ -70,7 +70,10 @@ def get_movies_by_category(category: str = Query(min_length = 5, max_length = 10
     tags = ['Auth'],
   )
 def login(user: User):
-  return user
+  if user.username == "admin" and user.password == "admin":
+    token = create_token(data = {"username": user.username})
+    return JSONResponse(status_code = 200, content = {"token": token})
+  return JSONResponse(status_code = 401, content = {"error": "Invalid credentials"})
 
 
 @app.post(
