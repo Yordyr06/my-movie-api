@@ -1,8 +1,10 @@
-from fastapi import FastAPI, Body, Path, Query
+from fastapi import FastAPI, Body, Path, Query, Request, HTTPException, Depends
 from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.security import HTTPBearer
 from pydantic import BaseModel
 from typing import List
-from jwt_manager import create_token
+from jwt_manager import create_token, validate_token
+
 
 from data import ( movies, Movie )
 
@@ -11,6 +13,13 @@ app = FastAPI(
   version = "0.0.1",
 )
 
+
+class JWTBearer(HTTPBearer):
+  async def __call__(self, request: Request):
+    auth = await super().__call__(request)
+    data = validate_token(auth.credentials)
+    if data['username'] != 'admin':
+      raise HTTPException(status_code = 401, detail = "Unauthorized")
 
 class User(BaseModel):
   username: str
@@ -35,7 +44,7 @@ def message():
     "/movies", 
     tags = ['Movies'], 
     response_model = List[Movie], 
-    status_code = 200
+    status_code = 200,
   )
 def get_movies() -> List[Movie]: 
   return JSONResponse(status_code = 200, content = movies)
@@ -107,7 +116,8 @@ def update_movie(movie_id: int, movie: Movie) -> dict:
 
 
 @app.delete(
-    '/movies/{movie_id}', 
+    '/movies/{movie_id}',
+    dependencies = [Depends(JWTBearer())],
     tags = ['Movies'], 
     response_model = dict,
     status_code = 200
