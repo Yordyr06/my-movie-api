@@ -2,6 +2,7 @@ from fastapi import FastAPI, Body, Path, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel
 from typing import List
+from jwt_manager import create_token
 
 from data import ( movies, Movie )
 
@@ -9,6 +10,12 @@ app = FastAPI(
   title = "My First FastAPI",
   version = "0.0.1",
 )
+
+
+class User(BaseModel):
+  username: str
+  password: str
+
 
 @app.get("/", tags = ["Home"])
 def message():
@@ -44,7 +51,7 @@ def get_movie(movie_id: int = Path(ge = 1)) -> Movie:
   for movie in movies:
     if movie["id"] == movie_id:
       return JSONResponse(status_code = 200, content = movies)
-  return JSONResponse(status_code = 404, content = [])
+  return JSONResponse(status_code = 404, content = {"message": "Movie added successfully"})
 
 
 @app.get(
@@ -56,6 +63,14 @@ def get_movie(movie_id: int = Path(ge = 1)) -> Movie:
 def get_movies_by_category(category: str = Query(min_length = 5, max_length = 10)) -> List[Movie]:
     data = [ item for item in movies if item["category"] == category ]
     return JSONResponse(status_code = 200, content = data)
+
+
+@app.post(
+    '/login',
+    tags = ['Auth'],
+  )
+def login(user: User):
+  return user
 
 
 @app.post(
